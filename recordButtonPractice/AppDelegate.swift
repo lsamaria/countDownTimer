@@ -18,7 +18,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window = UIWindow(frame: UIScreen.main.bounds)
         window?.makeKeyAndVisible()
         
-        let circleVC = CircleController()
+        let circleVC = BoxController()
         let navVC = UINavigationController(rootViewController: circleVC)
         window?.rootViewController = navVC
         

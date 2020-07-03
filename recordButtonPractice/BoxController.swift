@@ -42,6 +42,9 @@ class BoxController: UIViewController {
     fileprivate let bgShapeLayer = CAShapeLayer()
     fileprivate var basicAnimation: CABasicAnimation!
     
+    fileprivate var wereCAShapeLayersAdded = false
+    fileprivate var isBasicAnimationAnimating = false
+    
     fileprivate var maxTimeInSecs = 15
     fileprivate lazy var seconds = maxTimeInSecs
     fileprivate var milliseconds = 0
@@ -60,7 +63,7 @@ class BoxController: UIViewController {
         setGestures()
     }
     
-    fileprivate var wereCAShapeLayersAdded = false
+    
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
@@ -73,7 +76,32 @@ class BoxController: UIViewController {
         }
     }
     
-    //MARK:- Animations Methods
+    //MARK:- Anchors
+    fileprivate func setAnchors() {
+        
+        view.addSubview(boxForTimerLayer)
+        view.addSubview(roundButton)
+        view.addSubview(timerLabel)
+        
+        boxForTimerLayer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 3).isActive = true
+        boxForTimerLayer.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 3).isActive = true
+        boxForTimerLayer.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -3).isActive = true
+        boxForTimerLayer.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -3).isActive = true
+        
+        roundButton.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: 0).isActive = true
+        roundButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        roundButton.widthAnchor.constraint(equalToConstant: 75).isActive = true
+        roundButton.heightAnchor.constraint(equalToConstant: 75).isActive = true
+        
+        timerLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10).isActive = true
+        timerLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor).isActive = true
+        timerLabel.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor).isActive = true
+    }
+}
+
+//MARK:- Animations Methods
+extension BoxController {
+    
     fileprivate func addBothCAShapeLayersToCameraButton() {
         
         bgShapeLayer.frame = boxForTimerLayer.bounds
@@ -95,7 +123,6 @@ class BoxController: UIViewController {
         boxForTimerLayer.layer.addSublayer(shapeLayer)
     }
     
-    fileprivate var isBasicAnimationAnimating = false
     fileprivate func addProgressAnimation() {
         
         CATransaction.begin()
@@ -111,7 +138,7 @@ class BoxController: UIViewController {
         }
         
         basicAnimation.delegate = self
-        basicAnimation.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
+        basicAnimation.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.linear)
         basicAnimation.fromValue = 0
         basicAnimation.toValue = 1
         basicAnimation.duration = CFTimeInterval(seconds)
@@ -138,28 +165,6 @@ class BoxController: UIViewController {
         shapeLayer.timeOffset = pausedTime
         
         print("animation has paused/stopped\n")
-    }
-    
-    //MARK:- Anchors
-    fileprivate func setAnchors() {
-        
-        view.addSubview(boxForTimerLayer)
-        view.addSubview(roundButton)
-        view.addSubview(timerLabel)
-        
-        boxForTimerLayer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 3).isActive = true
-        boxForTimerLayer.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 3).isActive = true
-        boxForTimerLayer.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -3).isActive = true
-        boxForTimerLayer.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -3).isActive = true
-        
-        roundButton.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: 0).isActive = true
-        roundButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        roundButton.widthAnchor.constraint(equalToConstant: 75).isActive = true
-        roundButton.heightAnchor.constraint(equalToConstant: 75).isActive = true
-        
-        timerLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10).isActive = true
-        timerLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor).isActive = true
-        timerLabel.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor).isActive = true
     }
 }
 
@@ -189,6 +194,11 @@ extension BoxController {
     }
     
     @objc fileprivate func timerIsRunning() {
+        
+        if seconds == maxTimeInSecs && milliseconds == 0 {
+           // seconds = 14
+           // milliseconds = 0
+        }
         
         updateTimerLabel()
         
