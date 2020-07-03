@@ -18,8 +18,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window = UIWindow(frame: UIScreen.main.bounds)
         window?.makeKeyAndVisible()
         
-        let vc = ViewController()
-        let navVC = UINavigationController(rootViewController: vc)
+        let circleVC = CircleController()
+        let navVC = UINavigationController(rootViewController: circleVC)
         window?.rootViewController = navVC
         
         

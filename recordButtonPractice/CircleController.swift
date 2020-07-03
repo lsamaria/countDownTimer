@@ -9,7 +9,7 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class CircleController: UIViewController {
     
     
     //MARK:- Animations
@@ -37,13 +37,6 @@ class ViewController: UIViewController {
         label.text = initialStrForTimerLabel
         label.textAlignment = .center
         return label
-    }()
-    
-    fileprivate lazy var box: UIView = {
-        let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .brown
-        return view
     }()
     
     //MARK:- Properties
@@ -107,61 +100,30 @@ class ViewController: UIViewController {
         let lineWidth: CGFloat = 6
         let fillColor = UIColor.clear.cgColor
         
-        /* circle- */
         let bgCircularPath = UIBezierPath(arcCenter: center,
                                           radius: radius,
                                           startAngle: -.pi/2,
                                           endAngle: 3 * .pi/2,
                                           clockwise: true)
-        //bgShapeLayer.path = bgCircularPath.cgPath
-        /* circle- */
-        
-        /* box- */
-        bgShapeLayer.frame = box.bounds
-        bgShapeLayer.path = UIBezierPath(rect: box.bounds).cgPath
-        /* box- */
-        
+        bgShapeLayer.path = bgCircularPath.cgPath
         bgShapeLayer.strokeColor = UIColor.lightGray.cgColor
         bgShapeLayer.fillColor = fillColor
         bgShapeLayer.lineWidth = lineWidth
+        view.layer.addSublayer(bgShapeLayer)
+        view.layer.insertSublayer(bgShapeLayer, at: 0)
         
-        /* circle- */
-        //view.layer.addSublayer(bgShapeLayer)
-        //view.layer.insertSublayer(bgShapeLayer, at: 0)
-        /* circle- */
-        
-        /* box- */
-        box.layer.addSublayer(bgShapeLayer)
-        box.layer.insertSublayer(bgShapeLayer, at: 0)
-        /* box- */
-        
-        /* circle- */
         let circularPath = UIBezierPath(arcCenter: center,
                                              radius: radius,
                                              startAngle: -.pi/2,
                                              endAngle: 3 * .pi/2,
                                              clockwise: true)
-        //shapeLayer.path = circularPath.cgPath
-        /* cicrle- */
-        
-        /* box- */
-        shapeLayer.frame = box.bounds
-        shapeLayer.path = UIBezierPath(rect: box.bounds).cgPath
-        /* box- */
-        
+        shapeLayer.path = circularPath.cgPath
         shapeLayer.strokeColor = UIColor.red.cgColor
         shapeLayer.fillColor = fillColor
         shapeLayer.lineWidth = lineWidth
         shapeLayer.lineCap = .round
         shapeLayer.strokeEnd = 0
-        
-        /* circle- */
-        //view.layer.addSublayer(shapeLayer)
-        /* circle- */
-        
-        /* box- */
-        box.layer.addSublayer(shapeLayer)
-        /* box- */
+        view.layer.addSublayer(shapeLayer)
         
         //addProgressAnimation()
     }
@@ -176,7 +138,7 @@ class ViewController: UIViewController {
         removeAnimation()
         
         if shapeLayer.timeOffset > 0.0 {
-            // restarts animatiom from 0
+            // restarts animatiom from pause state
             shapeLayer.speed = 1.0
             shapeLayer.timeOffset = 0.0
         }
@@ -224,14 +186,8 @@ class ViewController: UIViewController {
     //MARK:- Anchors
     fileprivate func configureAnchors() {
         
-        view.addSubview(box)
         view.addSubview(cameraButton)
         view.addSubview(timerLabel)
-        
-        box.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 3).isActive = true
-        box.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 3).isActive = true
-        box.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -3).isActive = true
-        box.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -3).isActive = true
         
         cameraButton.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: 0).isActive = true
         cameraButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
@@ -245,18 +201,19 @@ class ViewController: UIViewController {
 }
 
 //MARK:- CAAnimationDelegate
-extension ViewController: CAAnimationDelegate  {
+extension CircleController: CAAnimationDelegate  {
     
     func animationDidStop(_ anim: CAAnimation, finished flag: Bool) {
-        print("***** animation done *****")
-        //isBasicAnimationAnimating = false
-        //resetTimerSecsAndInvalidateVideoTimer()
-        //pauseAnimation()
+        
+        if seconds == 0 {
+            
+            print("***** animation done *****")
+        }
     }
 }
 
 //MARK:- Timer
-extension ViewController {
+extension CircleController {
     
     //MARK:- Timers
     fileprivate func startTimer() {
@@ -376,7 +333,9 @@ extension ViewController {
         if isBasicAnimationAnimating {
             isBasicAnimationAnimating = false
             
-            pauseShapeLayerAnimation()
+            if seconds != 0 {
+                pauseShapeLayerAnimation()
+            }
             
             // this is just to immediatley remove the animation, don't uncomment this out
             //removeAnimation()
@@ -387,7 +346,7 @@ extension ViewController {
 }
 
 //MARK:- Gestures
-extension ViewController {
+extension CircleController {
     
     fileprivate func configureGestures() {
         
